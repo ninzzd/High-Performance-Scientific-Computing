@@ -3,6 +3,7 @@
 
 # C Binary Files
 *.o
+*.out
 *.exe
 
 # C Build Folder and Files
