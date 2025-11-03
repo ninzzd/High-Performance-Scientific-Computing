@@ -54,7 +54,7 @@ int main ( int argc, char *argv[] )
             cwd[j] = '\0';
         }
     }
-    #elif _LINUX_
+    #elif __linux__
     for(int j = null_index-1;j >= 0;j--){
         if(cwd[j] == '/'){
             break;

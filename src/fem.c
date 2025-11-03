@@ -544,7 +544,7 @@ int main()
         if(coord[mnode*i+0]==1 && coord[mnode*i+1]!=0 && coord[mnode*i+1]!=1) // u(1,y) for all 0 < y < 1
         {
             bcnode[k]=i+1;
-            bcval[k]= sin(pi*coord[mnode*i+1]);
+            bcval[k]=0;
             k++;
         }
         if(coord[mnode*i+1]==0) // u(x,0) for all 0 <= x <= 1
@@ -556,7 +556,7 @@ int main()
         if(coord[mnode*i+1]==1) // u(x,1) for all 0 <= x <= 1
         {
             bcnode[k]=i+1;
-            bcval[k]=0;
+            bcval[k]=1;
             k++;
         }
     }

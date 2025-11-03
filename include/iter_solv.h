@@ -4,6 +4,7 @@
 #include "stdlib.h"
 #include "lapacke.h"
 #include "cblas.h"
+#include "omp.h"
 #pragma once
 double sorOpt(double **a, int n);
 long long int jacobiSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result);
