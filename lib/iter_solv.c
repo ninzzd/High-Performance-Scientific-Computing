@@ -220,7 +220,7 @@ void fGetMat(FILE** kmat, FILE** fvec, FILE** kinfo){
     char kmat_path[255];
     char kinfo_path[255];
     char fvec_path[255];
-    printf("Enter the directory (absolute path) containing the files: 1) kinfo.txt 2) kmat.txt 3) fvec.txt:\n");
+    printf("Enter the directory (absolute path) containing the files: 1) kinfo.txt 2) kmat.txt 3) Fvec.txt:\n");
     scanf("%s",&dir);
     strcpy(kmat_path,dir);
     strcpy(kinfo_path,dir);
