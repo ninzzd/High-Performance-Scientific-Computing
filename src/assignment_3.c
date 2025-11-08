@@ -14,6 +14,9 @@ int main(){
     fclose(kmat);
     fclose(fvec);
     fclose(kinfo);
+    
+    x0 = (double*)malloc(n*sizeof(double));
+    x = (double*)malloc(n*sizeof(double));
     for(int i = 0;i < n;i++){
         x0[i] = 0.0f;
     }
