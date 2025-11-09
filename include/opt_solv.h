@@ -13,3 +13,4 @@ int steepestDescent(double **a, double *b, double* x0, int n, double eta, int mo
 int minimalResidual(double **a, double *b, double* x0, int n, double eta, int mode, double* result);
 int conjugateGradient(double **a, double *b, double *x0, int n, double eta, int mode, double *result);
 int bicgstab(double **a, double *b, double *x0, int n, double eta, int mode, double *result);
+int bicgstabOMP(double **a, double *b, double *x0, int n, double eta, int mode, double *result);

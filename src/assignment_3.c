@@ -1,10 +1,11 @@
 #include "iter_solv.h"
 #include "opt_solv.h"
 #include "fdm.h"
-/*#include "sys/time.h"
+#include "omp.h"
+#include "sys/time.h"
 #include "time.h"
 #include "unistd.h"
-*/
+
 int main(){
     double **a, *b, *x0, *x;
     int n;
@@ -30,5 +31,6 @@ int main(){
     for(int i = 0;i < n;i++){
         free(a[i]);
     }
+    // printf("Maximum thread count limit: %d\n",omp_get_max_threads());
     return 0;
 }
