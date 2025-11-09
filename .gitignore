@@ -11,3 +11,6 @@ build/
 
 # VS Code Configuration Files
 .vscode/
+
+# CSV logs
+*.csv
