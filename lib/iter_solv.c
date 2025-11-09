@@ -1,5 +1,4 @@
-#include "iter_solv.h"
-#include "math.h"
+#include <iter_solv.h>
 void printMat(double** a, double* b, double* x, int n){
     printf("\nMatrix A:\n");
     for(int i = 0;i < n;i++){
@@ -17,13 +16,13 @@ void printMat(double** a, double* b, double* x, int n){
         printf("%lf\n",x[i]);
     }
 }
-void printVect(double* x, int n){
-    printf("\n[");
-    for(int i = 0;i < n;i++){
-        printf("%lf ",x[i]);
-    }
-    printf("]\n");
-}
+// void printVect(double* x, int n){
+//     printf("\n[");
+//     for(int i = 0;i < n;i++){
+//         printf("%lf ",x[i]);
+//     }
+//     printf("]\n");
+// }
 void printIter(long long int iter){
     const char* suffix;
         switch(iter%10){

@@ -1,5 +1,15 @@
 #include <ompblas.h>
 int num_threads = 1;
+int printVect(double* x, int n){
+    if(n < 0)
+        return -1;
+    printf("[");
+    for(int i = 0;i < n;i++){
+        printf("%lf ",x[i]);
+    }
+    printf("]\n");
+    return 0;
+}
 int set_num_threads(int n){
     if(n < 1)
         return -1;
