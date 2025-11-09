@@ -21,6 +21,7 @@ int main(){
     max = 1.0;
     double *a, *b, res1, res2;
     for(n = 2;n <= n_max;n++){
+        res1 = res2 = 0.0;
         printf("n = %d\n",n);
         a = (double*)malloc(n*sizeof(double)); 
         b = (double*)malloc(n*sizeof(double)); 
@@ -39,12 +40,17 @@ int main(){
         int ompblas = printCPUTime(start,end);
 
         gettimeofday(&start,NULL);
-        res2 = cblas_ddot(n,a,1,b,1);
+        // res2 = cblas_ddot(n,a,1,b,1);
+        for(int i = 0;i < n;i++){
+            res2 += a[i]*b[i];
+        }
         gettimeofday(&end,NULL);
         printf("Result (Using cblas) = %lf\n",res2);
         int cblas = printCPUTime(start,end);
         printf("Is correct = %d\n",fabs(res1 - res2) <= 1e-6);
         fprintf(bmark,"%d,%d,%d\n",n,ompblas,cblas);
+        free(a);
+        free(b);
     }
     return 0;
 }
