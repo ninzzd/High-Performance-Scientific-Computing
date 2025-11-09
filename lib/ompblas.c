@@ -54,7 +54,15 @@ int vvdot(double *a, double *b, int n, double *result){
     free(partial);
     return 0;
 }
-int mvdot(double **a, double *b, int m, int n, double *result){
+int mvdot(double **a, double *b, int m, int n, double *res){
     // result should be allocated memory in the caller scope
+    int i,j;
+    #pragma omp parallel for num_threads(n_threads) private(i,j) default(shared)
+    for(i = 0;i < m;i++){
+        res[i] = 0.0f;
+        for(j = 0;j < n;j++){
+            res[i] += a[i][j]*b[j];
+        }
+    }
     return 0;
 }

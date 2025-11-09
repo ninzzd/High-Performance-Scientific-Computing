@@ -1,9 +1,9 @@
 #include <ompblas.h>
 #include <cblas.h>
 #include <math.h>
-#include "sys/time.h"
-#include "time.h"
-#include "unistd.h"
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
 double randd(double min, double max){
     return min + ((double)rand()/(double)RAND_MAX)*(max-min);
 }
