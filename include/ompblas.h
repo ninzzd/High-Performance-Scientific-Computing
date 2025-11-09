@@ -8,7 +8,7 @@
 #pragma once
 int n_threads;
 int printVect(double* x, int n);
-int printCPUTime(struct timeval start, struct timeval end);
+int getCPUTime(struct timeval start, struct timeval end, int mode);
 int set_num_threads(int n);
 int get_num_threads();
 double randd(double min, double max);

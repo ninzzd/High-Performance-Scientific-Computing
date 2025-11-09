@@ -29,18 +29,18 @@ int main(){
         gettimeofday(&start,NULL);
         vvdot_omp(a,b,n,&res1);
         gettimeofday(&end,NULL);
-        int ompblas = printCPUTime(start,end);
+        int ompblas = getCPUTime(start,end);
 
         gettimeofday(&start,NULL);
         for(int i = 0;i < n;i++){
             res2 += a[i]*b[i];
         }
         gettimeofday(&end,NULL);
-        int iter = printCPUTime(start,end);
+        int iter = getCPUTime(start,end);
         gettimeofday(&start,NULL);
         res3 = cblas_ddot(n,a,1,b,1);
         gettimeofday(&end,NULL);
-        int cblas = printCPUTime(start,end);
+        int cblas = getCPUTime(start,end);
         fprintf(bmark,"%d,%d,%d,%d\n",n,ompblas,cblas,iter);
         free(a);
         free(b);

@@ -4,7 +4,7 @@
 #include "sys/time.h"
 #include "time.h"
 #include "unistd.h"
-void printCPUTime(struct timeval start, struct timeval end){
+void getCPUTime(struct timeval start, struct timeval end){
     time_t s, us, ms;
     s = end.tv_sec - start.tv_sec;
     us = end.tv_usec - start.tv_usec;
@@ -78,7 +78,7 @@ int main(){
     gettimeofday(&end,NULL);
     printf("Optimal w = %lf\n",w_opt);
     printf("No. of iterations = %lld\n",iter_sor_opt);
-    printCPUTime(start,end);
+    getCPUTime(start,end);
     // printf("Final solution:\n");
     // printVect(x,n);
     printf(" ---- Steepest Gradient Descent ----\n");
@@ -86,7 +86,7 @@ int main(){
     int iter_sd = steepestDescent(a,b,x0,n,0.000001,0,x);
     gettimeofday(&end,NULL);
     printf("No. of iterations = %d\n",iter_sd);
-    printCPUTime(start,end);
+    getCPUTime(start,end);
     // printf("Final solution:\n");
     // printVect(x,n);
     printf(" ---- Minimal Residual Gradient Descent ----\n");
@@ -94,7 +94,7 @@ int main(){
     int iter_mr = minimalResidual(a,b,x0,n,0.000001,0,x);
     gettimeofday(&end,NULL);
     printf("No. of iterations = %d\n",iter_mr);
-    printCPUTime(start,end);
+    getCPUTime(start,end);
     // printf("Final solution:\n");
     // printVect(x,n);
     printf(" ---- Conjugate Gradient Descent ----\n");
@@ -102,7 +102,7 @@ int main(){
     int iter_cg = conjugateGradient(a,b,x0,n,0.000001,0,x);
     gettimeofday(&end,NULL);
     printf("No. of iterations = %d\n",iter_cg);
-    printCPUTime(start,end);
+    getCPUTime(start,end);
     // printf("Final solution:\n");
     // printVect(x,n);
     printf(" ---- BICGSTAB ----\n");
@@ -110,7 +110,7 @@ int main(){
     int iter_bicgstab = bicgstab(a,b,x0,n,0.000001,0,x);
     gettimeofday(&end,NULL);
     printf("No. of iterations = %d\n",iter_bicgstab);
-    printCPUTime(start,end);
+    getCPUTime(start,end);
     // printf("Final solution:\n");
     // printVect(x,n);
     // ------------------------------------------------------------------------------------

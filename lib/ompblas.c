@@ -16,7 +16,7 @@ int printVect(double* x, int n){
     printf("]\n");
     return 0;
 }
-int printCPUTime(struct timeval start, struct timeval end){
+int getCPUTime(struct timeval start, struct timeval end, int mode){
     time_t s, us, ms;
     s = end.tv_sec - start.tv_sec;
     us = end.tv_usec - start.tv_usec;
@@ -25,7 +25,8 @@ int printCPUTime(struct timeval start, struct timeval end){
         s -= 1;
     }
     ms = us/1000;
-    printf("CPU Time = %lds %ldms %ldus\n",s,ms,us%1000);
+    if (mode == 1)
+        printf("CPU Time = %lds %ldms %ldus\n",s,ms,us%1000);
     return (int)(s*1e6 + ms*1e3 + us);
 }
 int set_num_threads(int n){

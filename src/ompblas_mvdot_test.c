@@ -33,11 +33,11 @@ int main(){
         gettimeofday(&start,NULL);
         mvdot(a,b,n,n,res1);
         gettimeofday(&end,NULL);
-        int noomp = printCPUTime(start,end);
+        int noomp = getCPUTime(start,end);
         gettimeofday(&start,NULL);
         mvdot_omp(a,b,n,n,res2);
         gettimeofday(&end,NULL);
-        int omp = printCPUTime(start,end);
+        int omp = getCPUTime(start,end);
         for(int i = 0;i < n;i++){
             err[i] = fabs(res1[i] - res2[i]);
         }
