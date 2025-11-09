@@ -1,5 +1,8 @@
 #include <ompblas.h>
 int n_threads = 1;
+double randd(double min, double max){
+    return min + ((double)rand()/(double)RAND_MAX)*(max-min);
+}
 int printVect(double* x, int n){
     if(n < 0)
         return -1;
@@ -36,6 +39,13 @@ int get_num_threads(){
     return n_threads;
 }
 int vvdot(double *a, double *b, int n, double *result){
+    *result = 0;    
+    for(int i = 0;i < n;i++){
+        *result += a[i]*b[i];
+    }
+    return 0;
+}
+int vvdot_omp(double *a, double *b, int n, double *result){
     *result = 0;
     // printf("Number of threads = %d\n",n_threads);
     double *partial = (double*)malloc(n*sizeof(double));
@@ -57,7 +67,6 @@ int vvdot(double *a, double *b, int n, double *result){
 int mvdot(double **a, double *b, int m, int n, double *res){
     // result should be allocated memory in the caller scope
     int i,j;
-    #pragma omp parallel for num_threads(n_threads) private(i,j) default(shared)
     for(i = 0;i < m;i++){
         res[i] = 0.0f;
         for(j = 0;j < n;j++){
@@ -66,3 +75,33 @@ int mvdot(double **a, double *b, int m, int n, double *res){
     }
     return 0;
 }
+int mvdot_omp(double **a, double *b, int m, int n, double *res){
+    // result should be allocated memory in the caller scope
+    int i,j;
+    double temp;
+    #pragma omp parallel for num_threads(n_threads) private(i,j,temp) default(shared)
+    for(i = 0;i < m;i++){
+        temp = 0.0;
+        for(j = 0;j < n;j++){
+            temp += a[i][j]*b[j];
+        }
+        res[i] = temp; // Race condition does occur but all threads with same value of 'i' are trying to force the same value of 'temp' to res[i]
+    }
+    return 0;
+}
+int dnrm2(double *a, int n, double *res){
+    *res = 0.0;
+    for(int i = 0;i < n;i++){
+        *res += a[i]*a[i];
+    }
+    *res = sqrt(*res);
+    return 0;
+}
+// int dnrm2_omp(double *a, int n, double *res){
+//     *res = 0.0;
+//     for(int i = 0;i < n;i++){
+//         res += a[i]*a[i];
+//     }
+//     res = sqrt(res);
+//     return 0;
+// }

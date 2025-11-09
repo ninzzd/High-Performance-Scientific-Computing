@@ -161,36 +161,33 @@ int bicgstab(double **a, double *b, double *x0, int n, double eta, int mode, dou
         iter++;
         double *ap = (double*)malloc(n*sizeof(double));
         double *s = (double*)malloc(n*sizeof(double));
-        for(int i = 0;i < n;i++){
-            double row = 0.0;
-            for(int j = 0;j < n;j++){
-                row += a[i][j]*pk[j];
-            }
-            ap[i] = row;
-        }
-        double alpha = cblas_ddot(n,rk,1,r0_,1)/cblas_ddot(n,ap,1,r0_,1);
+        mvdot(a,pk,n,n,ap);
+        double rk_r0,ap_r0;
+        vvdot(rk,r0_,n,&rk_r0);
+        vvdot(ap,r0_,n,&ap_r0);
+        double alpha = rk_r0/ap_r0;
         for(int i = 0;i < n;i++){
             s[i] = rk[i] - alpha*ap[i];
         }
         double *as = (double*)malloc(n*sizeof(double));
-        for(int i = 0;i < n;i++){
-            double row = 0.0;
-            for(int j = 0;j < n;j++){
-                row += a[i][j]*s[j];
-            }
-            as[i] = row;
-        }
-        double w = cblas_ddot(n,as,1,s,1)/cblas_ddot(n,as,1,as,1);
-        double temp = cblas_ddot(n,rk,1,r0_,1);
+        mvdot(a,s,n,n,as);
+        double as_s,as_as;
+        vvdot(as,s,n,&as_s);
+        vvdot(as,as,n,&as_as);
+        double w = as_s/as_as;
+        // double temp = cblas_ddot(n,rk,1,r0_,1); 
+        // Replace temp wih rk_r0
+        double temp = rk_r0;
         for(int i = 0;i < n;i++){
             xk[i] += alpha*pk[i] + w*s[i];
             rk[i] = s[i] - w*as[i];
         }
-        double beta = (alpha*cblas_ddot(n,rk,1,r0_,1))/(w*temp);
+        vvdot(rk,r0_,n,&rk_r0);
+        double beta = (alpha*rk_r0)/(w*temp);
         for(int i = 0;i < n;i++){
             pk[i] = rk[i] + beta*(pk[i] - w*ap[i]);
         }
-        err = cblas_dnrm2(n,rk,1);
+        dnrm2(rk,n,&err);
         free(ap);
         free(as);
         free(s);
@@ -207,52 +204,59 @@ int bicgstabOMP(double **a, double *b, double *x0, int n, double eta, int mode, 
     double *rk = (double*)malloc(n*sizeof(double));
     double *r0_ = (double*)malloc(n*sizeof(double));
     double *pk = (double*)malloc(n*sizeof(double));
+    double *ax0 = (double*)malloc(n*sizeof(double));
     double err;
-    int iter = 0;
-    for(int i = 0;i < n;i++){
-        double ax = 0.0;
-        for(int j = 0;j < n;j++){
-            ax += a[i][j]*x0[j];
-        }
-        rk[i] = b[i] - ax;
-        pk[i] = rk[i];
-        r0_[i] = (double)rand()/(double)RAND_MAX;
-    }
+    int i;
     memcpy(xk,x0,n*sizeof(double));
+    // Initializing rk to r0, pk = p0 = r0, r0* = random (arbitrary)
+    mvdot_omp(a,x0,n,n,ax0);
+
+    #pragma omp parallel for num_threads(n_threads) private(i) default(shared)
+    for(i = 0;i < n;i++){
+        rk[i] = b[i] - ax0[i];
+        pk[i] = rk[i];
+        r0_[i] = (double)rand()/(double)RAND_MAX; // Is rand() costly?
+    }
+    int iter = 0;
     do{
         iter++;
         double *ap = (double*)malloc(n*sizeof(double));
         double *s = (double*)malloc(n*sizeof(double));
-        for(int i = 0;i < n;i++){
-            double row = 0.0;
-            for(int j = 0;j < n;j++){
-                row += a[i][j]*pk[j];
-            }
-            ap[i] = row;
-        }
-        double alpha = cblas_ddot(n,rk,1,r0_,1)/cblas_ddot(n,ap,1,r0_,1);
-        for(int i = 0;i < n;i++){
+        mvdot_omp(a,pk,n,n,ap);
+        double rk_r0,ap_r0;
+        vvdot(rk,r0_,n,&rk_r0);
+        vvdot(ap,r0_,n,&ap_r0);
+        double alpha = rk_r0/ap_r0;
+        #pragma omp parallel for num_threads(n_threads) firstprivate(alpha) private(i) default(shared)
+        for(i = 0;i < n;i++){
             s[i] = rk[i] - alpha*ap[i];
         }
+
         double *as = (double*)malloc(n*sizeof(double));
-        for(int i = 0;i < n;i++){
-            double row = 0.0;
-            for(int j = 0;j < n;j++){
-                row += a[i][j]*s[j];
-            }
-            as[i] = row;
-        }
-        double w = cblas_ddot(n,as,1,s,1)/cblas_ddot(n,as,1,as,1);
-        double temp = cblas_ddot(n,rk,1,r0_,1);
-        for(int i = 0;i < n;i++){
+        mvdot_omp(a,s,n,n,as);
+        double as_s,as_as;
+        vvdot(as,s,n,&as_s);
+        vvdot(as,as,n,&as_as);
+        double w = as_s/as_as;
+        // double temp = cblas_ddot(n,rk,1,r0_,1); 
+        // Replace temp wih rk_r0
+        double temp = rk_r0;
+
+        #pragma omp parallel for num_threads(n_threads) firstprivate(alpha,w) private(i) default(shared)
+        for(i = 0;i < n;i++){
             xk[i] += alpha*pk[i] + w*s[i];
             rk[i] = s[i] - w*as[i];
         }
-        double beta = (alpha*cblas_ddot(n,rk,1,r0_,1))/(w*temp);
-        for(int i = 0;i < n;i++){
+
+        vvdot(rk,r0_,n,&rk_r0);
+        double beta = (alpha*rk_r0)/(w*temp);
+
+        #pragma omp parallel for num_threads(n_threads) firstprivate(beta,w) private(i) default(shared)
+        for(i = 0;i < n;i++){
             pk[i] = rk[i] + beta*(pk[i] - w*ap[i]);
         }
-        err = cblas_dnrm2(n,rk,1);
+
+        dnrm2(rk,n,&err);
         free(ap);
         free(as);
         free(s);
