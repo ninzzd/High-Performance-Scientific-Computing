@@ -37,17 +37,21 @@ int get_num_threads(){
 }
 int vvdot(double *a, double *b, int n, double *result){
     *result = 0;
+    // printf("Number of threads = %d\n",n_threads);
     double *partial = (double*)malloc(n*sizeof(double));
     // Parallelized multiplication only
+    int i;
     #pragma omp parallel for num_threads(n_threads) private(i) default(shared)
-    {
-        for(int i = 0;i < n;i++){
-            partial[i] = a[i]*b[i];
-        }
+    for(i = 0;i < n;i++){
+        partial[i] = a[i]*b[i];
+        // id = omp_get_thread_num();
+        // printf("\ti = %d, id = %d\n",i,id);
     }
-    for(int i = 0;i < n;i++){
+    
+    for(i = 0;i < n;i++){
         *result += partial[i];
     }
+    free(partial);
     return 0;
 }
 int mvdot(double **a, double *b, int m, int n, double *result){
