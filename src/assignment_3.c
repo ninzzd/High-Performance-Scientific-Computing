@@ -64,6 +64,7 @@ int main(){
         // printf("Error L2 NRM = %lf\n",errnrm2);
         printf("Avg Time (No-OMP) (%d Repetitions) = %lf\n",num_iter,noomp_avg);
         printf("Avg Time (OMP) (%d Repetitions) = %lf\n",num_iter,omp_avg);
+        printf("Average Speedup (%d Repetitions) = %lf\n",num_iter,noomp_avg/omp_avg);
         printf("Avg Error (%d Repetitions) = %lf\n",num_iter,errnrm_avg);
     }
     free(b);

@@ -27,7 +27,7 @@ int getCPUTime(struct timeval start, struct timeval end, int mode){
     ms = us/1000;
     if (mode == 1)
         printf("CPU Time = %lds %ldms %ldus\n",s,ms,us%1000);
-    return (int)(s*1e6 + ms*1e3 + us);
+    return (int)(s*1e6 + us);
 }
 int set_num_threads(int n){
     if(n < 1)
