@@ -154,3 +154,12 @@ void generateFDM(){
     // }
     // free(a);
 }
+void generateMat(int N, int M, double *A, double* b, double* down, double* up, double* left, double* right, double x0, double y0, double dx, double dy) {
+    A = (double*)malloc((N-2) * (M-2) * sizeof(double));
+    for (int j = 0; j < M; j++) {
+        for (int i = 0; i < N; i++) {
+            int idx = j * N + i;
+            
+        }
+    }
+}
