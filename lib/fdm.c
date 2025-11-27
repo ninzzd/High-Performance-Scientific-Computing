@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#define idx(i,j,N) ((j)*(N)+(i))
 void generateFDM(){
     double d; // Discretization error in both x and y coordinates
     double u0y, u1y, ux0, ux1;
@@ -154,12 +155,69 @@ void generateFDM(){
     // }
     // free(a);
 }
-void generateMat(int N, int M, double *A, double* b, double* down, double* up, double* left, double* right, double x0, double y0, double dx, double dy) {
-    A = (double*)malloc((N-2) * (M-2) * sizeof(double));
-    for (int j = 0; j < M; j++) {
-        for (int i = 0; i < N; i++) {
-            int idx = j * N + i;
-            
+// Size of up, down, left, right = N-2 or M-2 (solution at corner points are always known)
+void generateMat(int N, int M, double* down, double* up, double* left, double* right, double x0, double y0, double dx, double dy, double *A, double* b) {
+    A = (double*)malloc((N-2) * (M-2) * (N-2) * (M-2) * sizeof(double));
+    b = (double*)malloc((N-2) * (M-2) * sizeof(double));
+    double coeff_x = 1.0 / (dx * dx);
+    double coeff_y = 1.0 / (dy * dy);
+    double coeff_center = -2.0 * (coeff_x + coeff_y);
+    for (int j = 1; j < M-1; j++) {
+        for (int i = 1; i < N-1; i++) {
+            int b_idx = idx(i-1, j-1, N-2);
+            int a_row = b_idx*(N-2)*(M-2);
+            A[a_row + b_idx] = coeff_center;
+            if(j==1 && i == 1){
+                b[b_idx] = -coeff_x * left[j-1] - coeff_y * down[i-1];
+                A[a_row + idx(i-1, j, N-2)] = coeff_x;   // up 
+                A[a_row + idx(i, j-1, N-2)] = coeff_y; // right
+            }  
+            else if(j==1 && i == N-2){
+                b[b_idx] = -coeff_x * right[j-1] - coeff_y * down[i-1];
+                A[a_row + idx(i-1, j, N-2)] = coeff_x;   // up 
+                A[a_row + idx(i-2, j-1, N-2)] = coeff_y; // left
+            }  
+            else if(j==M-2 && i == 1){
+                b[b_idx] = -coeff_x * left[j-1] - coeff_y * up[i-1];
+                A[a_row + idx(i-1, j-2, N-2)] = coeff_x;   // down 
+                A[a_row + idx(i, j-1, N-2)] = coeff_y; // right
+            }  
+            else if(j==M-2 && i == N-2){
+                b[b_idx] = -coeff_x * right[j-1] - coeff_y * up[i-1];
+                A[a_row + idx(i-1, j-2, N-2)] = coeff_x;   // down 
+                A[a_row + idx(i-2, j-1, N-2)] = coeff_y; // left
+            }  
+            else if(i == 1){
+                b[b_idx] = -coeff_x * left[j-1];
+                A[a_row + idx(i, j-1, N-2)] = coeff_x;   // right
+                A[a_row + idx(i-1, j-2, N-2)] = coeff_y; // down
+                A[a_row + idx(i-1, j, N-2)] = coeff_y;   // up
+            }  
+            else if(i == N-2){
+                b[b_idx] = -coeff_x * right[j-1];
+                A[a_row + idx(i-2, j-1, N-2)] = coeff_x; // left
+                A[a_row + idx(i-1, j-2, N-2)] = coeff_y; // down
+                A[a_row + idx(i-1, j, N-2)] = coeff_y;   // up
+            }  
+            else if(j == 1){
+                b[b_idx] = -coeff_y * down[i-1];
+                A[a_row + idx(i-2, j-1, N-2)] = coeff_x; // left
+                A[a_row + idx(i, j-1, N-2)] = coeff_x;   // right
+                A[a_row + idx(i-1, j, N-2)] = coeff_y;   // up
+            }  
+            else if(j == M-2){
+                b[b_idx] = -coeff_y * up[i-1];
+                A[a_row + idx(i-2, j-1, N-2)] = coeff_x; // left
+                A[a_row + idx(i, j-1, N-2)] = coeff_x;   // right
+                A[a_row + idx(i-1, j-2, N-2)] = coeff_y; // down
+            }  
+            else{
+                b[b_idx] = 0.0;
+                A[a_row + idx(i-2, j-1, N-2)] = coeff_x; // left
+                A[a_row + idx(i, j-1, N-2)] = coeff_x;   // right
+                A[a_row + idx(i-1, j-2, N-2)] = coeff_y; // down
+                A[a_row + idx(i-1, j, N-2)] = coeff_y;   // up
+            }
         }
     }
 }
