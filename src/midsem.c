@@ -10,7 +10,7 @@ int main(){
 
     coeff = (double**)malloc(n*sizeof(double*));
     jcoeff = (int**)malloc(n*sizeof(int*));
-    a = (double**)malloc(n*sizeof(double*));0 0 0 0 0 0 0 0 0 10
+    a = (double**)malloc(n*sizeof(double*));
     b = (double*)malloc(n*sizeof(double));
     for(int i = 0;i < n;i++){
         coeff[i] = (double*)malloc(3*sizeof(double));

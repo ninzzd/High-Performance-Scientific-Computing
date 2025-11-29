@@ -156,7 +156,7 @@ void generateFDM(){
     // free(a);
 }
 // Size of up, down, left, right = N-2 or M-2 (solution at corner points are always known)
-void generateMat(int N, int M, double* down, double* up, double* left, double* right, double x0, double y0, double dx, double dy, double *A, double* b) {
+void generateMat(int N, int M, double* down, double* up, double* left, double* right, double dx, double dy, double *A, double* b) {
     A = (double*)malloc((N-2) * (M-2) * (N-2) * (M-2) * sizeof(double));
     b = (double*)malloc((N-2) * (M-2) * sizeof(double));
     double coeff_x = 1.0 / (dx * dx);
