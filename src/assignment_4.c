@@ -35,15 +35,17 @@ int main(int argc, char** argv){
         scanf("%lf",&downg);
         M = (int)sqrt((double)Ng);
         delta = 1.0/(M - 1);
-        MPI_Bcast(&Ng, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&delta, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&M, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&upg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&downg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&leftg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&rightg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
+    MPI_Bcast(&Ng, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&delta, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&M, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&upg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&downg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&leftg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&rightg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
+
+    // Load balancing (Expected: Ng >> nproc)
     if(rank < Ng%nproc){
         N = Ng/nproc + 1;
     }
