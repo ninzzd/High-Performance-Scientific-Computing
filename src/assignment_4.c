@@ -36,6 +36,7 @@ int main(int argc, char** argv){
         M = (int)sqrt((double)Ng);
         delta = 1.0/(M - 1);
     }
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast(&Ng, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&delta, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&M, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -43,8 +44,6 @@ int main(int argc, char** argv){
     MPI_Bcast(&downg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&leftg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&rightg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
-
     // Load balancing (Expected: Ng >> nproc)
     if(rank < Ng%nproc){
         N = Ng/nproc + 1;
@@ -56,6 +55,7 @@ int main(int argc, char** argv){
         N = N + 1; // Leftmost overlaps only on the right side and rightmost overlaps only on the left side
     else
         N = N + 2; // Left and right sides overlap, hence must add two new columns (overlapped points)
+    
     A = (double*)malloc((N-2) * (M-2) * (N-2) * (M-2) * sizeof(double));
     b = (double*)malloc((N-2) * (M-2) * sizeof(double));
     up = (double*) malloc((N-2) * sizeof(double));
@@ -66,7 +66,7 @@ int main(int argc, char** argv){
     x_next = (double*) malloc((N-2)*(M-2) * sizeof(double));
     sendRight = malloc((M-2)*sizeof(double));
     sendLeft = malloc((M-2)*sizeof(double));
-    reqLen = (rank == 0 || rank == nproc - 1) ? 1 : 2;
+    reqLen = (rank == 0 || rank == nproc - 1) ? 2 : 4;
     reqs = (MPI_Request*) malloc(reqLen*sizeof(MPI_Request));
     for(int i = 0;i < N;i++){
         up[i] = upg;
