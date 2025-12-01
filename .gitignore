@@ -17,3 +17,6 @@ build/
 
 # Mesh files inside src/
 src/*.msh
+
+# MPI Logs
+logs/

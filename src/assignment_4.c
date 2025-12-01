@@ -44,6 +44,8 @@ int main(int argc, char** argv){
     MPI_Bcast(&downg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&leftg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&rightg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    printf("Rank = %d, Process ID = %d\n", rank, getpid());
     // Load balancing (Expected: Ng >> nproc)
     if(rank < Ng%nproc){
         N = Ng/nproc + 1;
@@ -127,7 +129,7 @@ int main(int argc, char** argv){
         }
         MPI_Waitall(reqLen, reqs, MPI_STATUSES_IGNORE);
         // Solver
-        generateMat(N, M, down, up, left, right, delta, delta, A, b); // A -> (N-1)*(M-2) x (N-1)*(M-2), b -> (N-1)*(M-2)
+        generateMat(N, M, down, up, left, right, delta, delta, A, b); 
         for(int i = 0;i < (N-2)*(M-2);i++){
             double sum = 0.0;
             for(int j = 0;j < (N-2)*(M-2);j++){
@@ -141,8 +143,8 @@ int main(int argc, char** argv){
         MPI_Allreduce(&err, &errg, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
         if(rank == 0){
             printf("Global Error after iteration %d: %lf\n", iter, errg);
-            MPI_Bcast(&errg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
+        MPI_Bcast(&errg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         memcpy(x, x_next, (N-2)*(M-2)*sizeof(double));
         iter++;
     }while(errg > errg_threshold);
