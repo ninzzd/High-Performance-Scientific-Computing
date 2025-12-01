@@ -59,6 +59,10 @@ int main(int argc, char** argv){
         N = N + 2; // Left and right sides overlap, hence must add two new columns (overlapped points)
     
     A = (double*)malloc((N-2) * (M-2) * (N-2) * (M-2) * sizeof(double));
+    if ()A == NULL){
+        printf("Memory allocation failed for A on rank %d\n", rank);
+        MPI_Abort(MPI_COMM_WORLD, -1);
+    }
     b = (double*)malloc((N-2) * (M-2) * sizeof(double));
     up = (double*) malloc((N-2) * sizeof(double));
     down = (double*) malloc((N-2) * sizeof(double));
@@ -70,18 +74,21 @@ int main(int argc, char** argv){
     sendLeft = malloc((M-2)*sizeof(double));
     reqLen = (rank == 0 || rank == nproc - 1) ? 2 : 4;
     reqs = (MPI_Request*) malloc(reqLen*sizeof(MPI_Request));
-    for(int i = 0;i < N;i++){
-        up[i] = upg;
-        down[i] = downg;
+    for(int i = 0;i < reqLen;i++){
+        reqs[i] = MPI_REQUEST_NULL;
+    }
+    for(int i = 0;i < N-2;i++){
+        up[i] = upg; // Upper boundary condition (identical for all processes)
+        down[i] = downg; // Lower boundary condition (identical for all processes)
     }
     if(rank == 0){
-        for(int i = 0;i < M;i++){
-            left[i] = leftg;
+        for(int i = 0;i < M-2;i++){
+            left[i] = leftg; // Global left boundary condition (only for rank 0)
         }
     }
     if(rank == nproc - 1){
-        for(int i = 0;i < M;i++){
-            right[i] = rightg;
+        for(int i = 0;i < M-2;i++){
+            right[i] = rightg; // Global right boundary condition (only for last rank)
         }
     }
     do{
@@ -126,8 +133,9 @@ int main(int argc, char** argv){
                 MPI_Isend(sendLeft, M-2, MPI_DOUBLE, rank - 1, 1, MPI_COMM_WORLD, &reqs[reqCount++]); // Right to left send
                 MPI_Irecv(left, M-2, MPI_DOUBLE, rank - 1, 0, MPI_COMM_WORLD, &reqs[reqCount++]); // Left to right recv
             }
+            if(reqCount > 0)
+                MPI_Waitall(reqLen, reqs, MPI_STATUSES_IGNORE);
         }
-        MPI_Waitall(reqLen, reqs, MPI_STATUSES_IGNORE);
         // Solver
         generateMat(N, M, down, up, left, right, delta, delta, A, b); 
         for(int i = 0;i < (N-2)*(M-2);i++){

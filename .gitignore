@@ -20,3 +20,6 @@ src/*.msh
 
 # MPI Logs
 logs/
+
+# Core Dumps
+coredumps/
